@@ -3,6 +3,7 @@ import { LogLevel, SapphireClient, container } from '@sapphire/framework';
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { getGuildLanguage } from './helpers/provide/config';
 import getGuildCount from './helpers/provide/guildCount';
+import { ScheduledTaskSQSStrategy } from '@sapphire/plugin-scheduled-tasks/register-sqs';
 
 container.client = new SapphireClient({
 	defaultPrefix: 'b!',
@@ -34,6 +35,17 @@ container.client = new SapphireClient({
 			return guildLanguage || 'en-US';
 		},
 		defaultMissingKey: 'generic:key_not_found'
+	},
+	tasks: {
+		strategy: new ScheduledTaskSQSStrategy({
+			queueUrl: process.env.SQS_QUEUE_URL!,
+			region: process.env.AWS_REGION,
+			sqs: {
+				config: {
+					
+				}
+			}
+		})
 	}
 });
 
